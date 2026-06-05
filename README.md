@@ -57,8 +57,8 @@ py_pet_project/
 ### 1. Клонировать проект
 
 ```bash
-git clone [<repo_url>](https://github.com/premiumnofrost/py_pet_project/)
-cd postagre_test
+git clone https://github.com/premiumnofrost/py_pet_project.git
+cd py_pet_project
 ```
 
 ### 2. Создать виртуальное окружение
