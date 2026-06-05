@@ -1,0 +1,14 @@
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.db.database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(50), unique=True)
+    age: Mapped[int]
+    email: Mapped[str]
+    is_admin: Mapped[bool] = mapped_column(default=False)

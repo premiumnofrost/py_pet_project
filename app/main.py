@@ -1,28 +1,13 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.db.database import get_db
 from app.models import User
-from pydantic import BaseModel, ConfigDict
+from app.schemas import UserIn, UserOut
+
 
 app = FastAPI()
 
-# --- Pydantic схемы ---
-class UserIn(BaseModel):
-    username: str
-    age: int
-    email: str
-    is_admin: bool = False
-
-
-class UserOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    username: str
-    age: int
-    email: str
-    is_admin: bool
 
 
 # --- эндпоинты ---
