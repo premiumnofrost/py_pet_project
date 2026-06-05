@@ -57,7 +57,7 @@ py_pet_project/
 ### 1. Клонировать проект
 
 ```bash
-git clone <repo_url>
+git clone [<repo_url>](https://github.com/premiumnofrost/py_pet_project/)
 cd postagre_test
 ```
 
