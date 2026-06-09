@@ -1,236 +1,199 @@
-# FastAPI + PostgreSQL + SQLAlchemy + Alembic
+# FastAPI + PostgreSQL + SQLAlchemy + Alembic (Accounts System)
 
-Учебный pet-проект для изучения backend-разработки на Python.
+Учебный backend-проект для изучения разработки REST API на Python.
 
-## Стек
+Проект реализует систему пользователей и банковских аккаунтов с операциями над балансом.
 
-- Python 3.14
+---
+
+## 🚀 Стек
+
+- Python 3.12+
 - FastAPI
 - PostgreSQL
 - SQLAlchemy 2.0
 - Alembic
 - Uvicorn
+- Pydantic
 
 ---
 
-## Возможности
+## 📦 Возможности
 
 ### Пользователи
-
 - Создание пользователя
 - Получение списка пользователей
 - Получение пользователя по ID
+- Обновление пользователя
+- Удаление пользователя
+
+### Аккаунты
+- Создание аккаунта пользователя
+- Получение аккаунта по ID
+- Получение всех аккаунтов пользователя
+- Пополнение баланса (deposit)
+- Списание баланса (withdraw)
+- Перевод между аккаунтами (transfer)
 
 ---
 
-## Структура проекта
+## 🏗 Архитектура
 
-```text
+Проект разделён на слои:
+
+- API (FastAPI routers)
+- Services (бизнес-логика)
+- Models (SQLAlchemy ORM)
+- Schemas (Pydantic)
+- DB (подключение и сессии)
+
+---
+
+## 📁 Структура
+
 py_pet_project/
 │
 ├── app/
 │   ├── api/
-│   │   └── users.py
+│   │   ├── users.py
+│   │   └── accounts.py
 │   │
 │   ├── db/
 │   │   └── database.py
 │   │
 │   ├── models/
-│   │   └── user.py
+│   │   ├── user.py
+│   │   └── account.py
 │   │
 │   ├── schemas/
-│   │   └── user.py
+│   │   ├── user.py
+│   │   └── account.py
+│   │
+│   ├── services/
+│   │   ├── user_service.py
+│   │   └── account_service.py
 │   │
 │   └── main.py
 │
 ├── alembic/
-│
 ├── alembic.ini
-│
 └── requirements.txt
-```
 
 ---
 
-## Установка
+## ⚙️ Установка
 
-### 1. Клонировать проект
-
-```bash
 git clone https://github.com/premiumnofrost/py_pet_project.git
 cd py_pet_project
-```
 
-### 2. Создать виртуальное окружение
-
-Windows:
-
-```bash
 python -m venv .venv
+
+# Windows
 .venv\Scripts\activate
-```
 
-Linux/Mac:
-
-```bash
-python -m venv .venv
+# Linux/Mac
 source .venv/bin/activate
-```
 
-### 3. Установить зависимости
-
-```bash
 pip install -r requirements.txt
-```
 
 ---
 
-## PostgreSQL
+## 🐘 PostgreSQL
 
-Создать базу данных:
-
-```sql
 CREATE DATABASE fastapi_db;
-```
 
 ---
 
-## Настройка подключения
+## 🔧 Настройка
 
-Файл:
-
-```python
 app/db/database.py
-```
 
-Изменить строку подключения:
-
-```python
 DATABASE_URL = "postgresql+psycopg2://postgres:YOUR_PASSWORD@localhost:5432/fastapi_db"
-```
 
 ---
 
-## Миграции
+## 📊 Миграции
 
-Создание миграции:
-
-```bash
 alembic revision --autogenerate -m "init"
-```
-
-Применение миграций:
-
-```bash
 alembic upgrade head
-```
-
-Откат на одну миграцию:
-
-```bash
 alembic downgrade -1
-```
 
 ---
 
-## Запуск проекта
+## ▶️ Запуск
 
-```bash
 uvicorn app.main:app --reload
-```
 
-После запуска:
-
-```text
-http://127.0.0.1:8000
-```
-
-Swagger:
-
-```text
 http://127.0.0.1:8000/docs
-```
-
-ReDoc:
-
-```text
 http://127.0.0.1:8000/redoc
-```
 
 ---
 
-## API
+## 👤 Users API
 
-### Создать пользователя
-
-POST
-
-```http
-/users
-```
-
-Пример запроса:
-
-```json
+POST /users
 {
   "username": "timur",
   "age": 22,
   "email": "timur@mail.com",
   "is_admin": false
 }
-```
+
+GET /users
+GET /users/{id}
 
 ---
 
-### Получить список пользователей
+## 💰 Accounts API
 
-GET
+POST /accounts
+{
+  "user_id": 1
+}
 
-```http
-/users
-```
+GET /accounts/{id}
 
----
+POST /accounts/{id}/deposit
+{
+  "amount": 100
+}
 
-### Получить пользователя по ID
+POST /accounts/{id}/withdraw
+{
+  "amount": 50
+}
 
-GET
-
-```http
-/users/{id}
-```
-
-Пример:
-
-```http
-/users/1
-```
-
----
-
-## Модель User
-
-```python
-class User(Base):
-    __tablename__ = "users"
-
-    id: int
-    username: str
-    age: int
-    email: str
-    is_admin: bool
-```
+POST /accounts/transfer
+{
+  "from_account": 1,
+  "to_account": 2,
+  "amount": 100
+}
 
 ---
 
-## Планы по развитию проекта
+## 🧠 Модели
 
-- [ ] Update User
-- [ ] Delete User
-- [ ] JWT Authentication
-- [ ] Регистрация пользователей
-- [ ] Хеширование паролей
-- [ ] Роли пользователей
-- [ ] Docker
-- [ ] Тесты (pytest)
-- [ ] CI/CD
+User:
+- id
+- username
+- email
+- age
+- is_admin
+
+Account:
+- id
+- user_id
+- balance
+
+---
+
+## 📌 Планы
+
+- JWT authentication
+- Password hashing
+- Roles system
+- Transaction history (ledger)
+- Docker
+- Tests
+- CI/CD
