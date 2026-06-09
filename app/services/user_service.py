@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
+from app.models.account import Account
+
 from sqlalchemy import update
 
 class UserService:
@@ -55,7 +57,13 @@ class UserService:
         db.refresh(user)
         return user
 
-
+    # ---------------- GET USER ACCOUTS ----------------
+    @staticmethod
+    def get_user_accounts(db: Session, user_id: int):
+        account = db.query(Account).filter(Account.user_id == user_id).all()
+        if not account:
+            return False
+        return account
 
     # ---------------- DELETE ----------------
     @staticmethod
@@ -67,3 +75,4 @@ class UserService:
         db.delete(user)
         db.commit()
         return True
+    

@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.account import Account
 from app.models.user import User
@@ -24,8 +25,17 @@ class AccountService:
         
     # ---------------- get acc ----------------
         @staticmethod
-        def get_account(db: Session, account_id: int):
-            return db.query(Account).filter(Account.id == account_id).first()
+        def get_user_by_account_id(db: Session, account_id: int):
+            account = db.query(Account).filter(Account.id == account_id).first()
+            if not account:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            return account.user
+
+    # ---------------- get User of this Account ----------------
+        @staticmethod
+        def get_user_account(db: Session, account_id: int):
+            return db.query(User).filter(User.id == account_id).first()
 
 
     # ---------------- deposit ----------------

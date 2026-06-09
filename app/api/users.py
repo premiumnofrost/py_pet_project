@@ -24,12 +24,6 @@ def list_users(
     return UserService.list_users(db, limit=limit, offset=offset)
 
 
-# ---------------- SEARCH ----------------
-@router.get("/search", response_model=list[UserOut])
-def search_users(q: str, db: Session = Depends(get_db)):
-    return UserService.search_users(db, q)
-
-
 # ---------------- READ ONE ----------------
 @router.get("/{user_id}", response_model=UserOut)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -47,22 +41,13 @@ def update_user(user_id: int, user_data: UserPatch, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# ---------------- DELETE ----------------
-@router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    success = UserService.delete_user(db, user_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"detail": "User deleted"}
-
-
 # ---------------- USER ACCOUNTS (READ ONLY) ----------------
 @router.get("/{user_id}/accounts")
 def get_user_accounts(user_id: int, db: Session = Depends(get_db)):
     return UserService.get_user_accounts(db, user_id)
 
 
-# ---------------- USER STATUS ----------------
+# ----------------SET USER STATUS ----------------
 @router.patch("/{user_id}/status")
 def set_user_status(user_id: int, data:UserStatus, db: Session = Depends(get_db)):
     user = UserService.set_active(db, user_id, data.is_active)
@@ -71,3 +56,11 @@ def set_user_status(user_id: int, data:UserStatus, db: Session = Depends(get_db)
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+# ---------------- DELETE ----------------
+@router.delete("/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    success = UserService.delete_user(db, user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"detail": "User deleted"}

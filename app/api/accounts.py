@@ -8,6 +8,13 @@ from app.schemas.account import (
     BalanceOperation,
     TransferById
 )
+from app.schemas.user import (
+    UserOut
+)
+
+
+
+
 from app.services.account_service import AccountService
 
 router = APIRouter(
@@ -42,10 +49,10 @@ def get_account(
     return account
 
 
-# ---------- GET ALL ACCOUNTS ----------
-@router.get("/user/{user_id}", response_model=list[AccountOut])
-def get_user_accounts(user_id: int, db: Session = Depends(get_db)):
-    return AccountService.get_user_accounts(db, user_id)
+# ---------- GET USER OF THIS ACCOUNT ----------
+@router.get("/get_user/{account_id}", response_model=UserOut)
+def get_user_by_account_id(account_id: int, db: Session = Depends(get_db)):
+    return AccountService.get_user_by_account_id(db, account_id)
 
 
 
