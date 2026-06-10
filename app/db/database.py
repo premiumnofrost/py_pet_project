@@ -1,11 +1,19 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# формат: postgresql://пользователь:пароль@хост:порт/имя_базы
-DATABASE_URL = "postgresql://postgres:@localhost:5432/fastapi_db"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:2122@localhost:5432/fastapi_db"
+)
 
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
 
 class Base(DeclarativeBase):
     pass
