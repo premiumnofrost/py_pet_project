@@ -74,7 +74,11 @@ py_pet_project/
 │   │   └── account_service.py
 │   │
 │   └── main.py
-│
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   └── test_deposit.py
+│ 
 ├── alembic/
 ├── alembic.ini
 └── requirements.txt
@@ -101,6 +105,12 @@ pip install -r requirements.txt
 ## 🐘 PostgreSQL
 
 CREATE DATABASE fastapi_db;
+
+---
+
+## 🧪 Тестирование
+Для обеспечения качества кода используются интеграционные тесты (Pytest + SQLAlchemy).
+Запуск: `pytest`
 
 ---
 
