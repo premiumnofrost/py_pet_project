@@ -26,3 +26,20 @@
    ```bash
    git clone [https://github.com/premiumnofrost/py_pet_project.git](https://github.com/premiumnofrost/py_pet_project.git)
    cd py_pet_project
+
+2. Запустите инфраструктуру:
+
+   ```Bash
+   docker-compose up -d --build
+   API будет доступно по адресу: http://127.0.0.1:8000/docs
+
+3. 📊 Управление базой данных
+Миграции управляются через Alembic. После запуска контейнеров примените миграции:
+
+   ```Bash
+   docker-compose exec web alembic upgrade head
+   🧪 Тестирование
+   Для обеспечения качества кода используются интеграционные тесты (Pytest + HTTPX).
+
+   Bash
+   pytest
