@@ -1,209 +1,28 @@
-# FastAPI + PostgreSQL + SQLAlchemy + Alembic (Accounts System)
+# FastAPI Banking System 🏦
 
-Учебный backend-проект для изучения разработки REST API на Python.
+Учебный backend-проект, реализующий систему управления пользователями и банковскими счетами. Проект спроектирован с учетом асинхронного взаимодействия и принципов Event-Driven архитектуры.
 
-Проект реализует систему пользователей и банковских аккаунтов с операциями над балансом.
+## 🚀 Стек технологий
+- **Core**: Python 3.12+, FastAPI
+- **Database**: PostgreSQL, SQLAlchemy 2.0 (Async), Alembic
+- **Infrastructure**: Docker & Docker Compose
+- **Event Bus**: Apache Kafka (aiokafka)
 
----
+## 🏗 Архитектура и задачи
+Проект разделен на логические слои: API (routers), Services (бизнес-логика), Models (ORM), Schemas (Pydantic).
 
-## 🚀 Стек
-
-- Python 3.12+
-- FastAPI
-- PostgreSQL
-- SQLAlchemy 2.0
-- Alembic
-- Uvicorn
-- Pydantic
-
----
+> **💡 Почему здесь Kafka?**
+> Kafka добавлена как компонент для отработки навыков асинхронного взаимодействия между сервисами и реализации **Event-Driven подхода**. В рамках проекта это решение обеспечивает задел для отложенной обработки уведомлений и логирования событий без нагрузки на основной API.
 
 ## 📦 Возможности
+- **Users**: Создание, получение списка, управление статусом (активация/блокировка), удаление.
+- **Accounts**: Создание счетов, депозит, снятие средств.
+- **Transfers**: Атомарные переводы между счетами (реализованы через транзакции БД для обеспечения целостности данных).
 
-### Пользователи
-- Создание пользователя
-- Получение списка пользователей
-- Получение пользователя по ID
-- Обновление пользователя
-- Удаление пользователя
+## 🐳 Запуск проекта
+Проект полностью контейнеризирован. Для запуска убедитесь, что у вас установлены Docker и Docker Compose.
 
-### Аккаунты
-- Создание аккаунта пользователя
-- Получение аккаунта по ID
-- Получение всех аккаунтов пользователя
-- Пополнение баланса (deposit)
-- Списание баланса (withdraw)
-- Перевод между аккаунтами (transfer)
-
----
-
-## 🏗 Архитектура
-
-Проект разделён на слои:
-
-- API (FastAPI routers)
-- Services (бизнес-логика)
-- Models (SQLAlchemy ORM)
-- Schemas (Pydantic)
-- DB (подключение и сессии)
-
----
-
-## 📁 Структура
-
-py_pet_project/
-│
-├── app/
-│   ├── api/
-│   │   ├── users.py
-│   │   └── accounts.py
-│   │
-│   ├── db/
-│   │   └── database.py
-│   │
-│   ├── models/
-│   │   ├── user.py
-│   │   └── account.py
-│   │
-│   ├── schemas/
-│   │   ├── user.py
-│   │   └── account.py
-│   │
-│   ├── services/
-│   │   ├── user_service.py
-│   │   └── account_service.py
-│   │
-│   └── main.py
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py
-│   └── test_deposit.py
-│ 
-├── alembic/
-├── alembic.ini
-└── requirements.txt
-
----
-
-## ⚙️ Установка
-
-git clone https://github.com/premiumnofrost/py_pet_project.git
-cd py_pet_project
-
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# Linux/Mac
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
----
-
-## 🐘 PostgreSQL
-
-CREATE DATABASE fastapi_db;
-
----
-
-## 🧪 Тестирование
-Для обеспечения качества кода используются интеграционные тесты (Pytest + SQLAlchemy).
-Запуск: `pytest`
-
----
-
-## 🔧 Настройка
-
-app/db/database.py
-
-DATABASE_URL = "postgresql+psycopg2://postgres:YOUR_PASSWORD@localhost:5432/fastapi_db"
-
----
-
-## 📊 Миграции
-
-alembic revision --autogenerate -m "init"
-alembic upgrade head
-alembic downgrade -1
-
----
-
-## ▶️ Запуск
-
-uvicorn app.main:app --reload
-
-http://127.0.0.1:8000/docs
-http://127.0.0.1:8000/redoc
-
----
-
-## 👤 Users API
-
-POST /users
-{
-  "username": "timur",
-  "age": 22,
-  "email": "timur@mail.com",
-  "is_admin": false
-}
-
-GET /users
-GET /users/{id}
-
----
-
-## 💰 Accounts API
-
-POST /accounts
-{
-  "user_id": 1
-}
-
-GET /accounts/{id}
-
-POST /accounts/{id}/deposit
-{
-  "amount": 100
-}
-
-POST /accounts/{id}/withdraw
-{
-  "amount": 50
-}
-
-POST /accounts/transfer
-{
-  "from_account": 1,
-  "to_account": 2,
-  "amount": 100
-}
-
----
-
-## 🧠 Модели
-
-User:
-- id
-- username
-- email
-- age
-- is_admin
-
-Account:
-- id
-- user_id
-- balance
-
----
-
-## 📌 Планы
-
-- JWT authentication
-- Password hashing
-- Roles system
-- Transaction history (ledger)
-- Docker
-- Tests
-- CI/CD
+1. Клонируйте репозиторий:
+   ```bash
+   git clone [https://github.com/premiumnofrost/py_pet_project.git](https://github.com/premiumnofrost/py_pet_project.git)
+   cd py_pet_project
