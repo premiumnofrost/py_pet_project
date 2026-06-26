@@ -1,89 +1,71 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+# from sqlalchemy.exc import SQLAlchemyError
+
 from app.models.account import Account
 from app.models.user import User
+from app.services.kafka_producer import kafka_service
 
 
 class AccountService:
     # ---------------- CREATE ----------------
-        @staticmethod
-        def create_account(db: Session, user_id: int):
-            user = db.query(User).filter(User.id == user_id).first()
+    @staticmethod
+    async def create_account(db: AsyncSession, user_id: int):
 
-            if not user:
-                raise ValueError("User not found")
-            
-            account = Account(
-                user_id=user_id
-            )
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
 
-            db.add(account)
-            db.commit()
-            db.refresh(account)
+        if not user:
+            raise ValueError("User not found")
+        
+        account = Account(user_id=user_id)
 
-            return account
+        db.add(account)
+        await db.commit()
+        await db.refresh(account)
+
+        return account
         
     # ---------------- get acc ----------------
-        @staticmethod
-        def get_user_by_account_id(db: Session, account_id: int):
-            account = db.query(Account).filter(Account.id == account_id).first()
-            if not account:
-                raise HTTPException(status_code=404, detail="User not found")
+    @staticmethod
+    async def get_user_by_account_id(db: AsyncSession, account_id: int):
+        result = await db.execute(select(Account).where(Account.id == account_id))
+        account = result.scalars().first()
+        
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
 
-            return account.user
+        return account.user
 
     # ---------------- get User of this Account ----------------
-        @staticmethod
-        def get_user_account(db: Session, account_id: int):
-            return db.query(User).filter(User.id == account_id).first()
-
+    @staticmethod
+    async def get_user_account(db: AsyncSession, account_id: int):
+        result = await db.execute(select(User).where(User.id == account_id))
+        return result.scalars().first()
 
     # ---------------- deposit ----------------
-        @staticmethod
-        def deposit(db: Session, account_id: int, amount: int):
-            account = db.query(Account).filter(Account.id == account_id).first()
-            if not account:
-                return None
+    @staticmethod
+    async def deposit(db: AsyncSession, account_id: int, amount: int):
 
-            account.balance += amount
+        stmt = select(Account).where(Account.id == account_id).with_for_update()
+        result = await db.execute(stmt)
+        account = result.scalars().first()
+        
+        if not account:
+            return None 
+        
+        account.balance += amount
 
-            db.commit()
-            db.refresh(account)
-            return account
-
-    # ---------------- withdraw ----------------
-        @staticmethod
-        def withdraw(db: Session, account_id: int, amount: int):
-            account = db.query(Account).filter(Account.id == account_id).first()
-            if not account:
-                return None
-
-            if account.balance < amount:
-                raise ValueError("Not enough balance")
-
-            account.balance -= amount
-
-            db.commit()
-            db.refresh(account)
-            return account
-
-    # ---------------- transfer ----------------
-        @staticmethod
-        def transfer(db: Session, from_id: int, to_id: int, amount: int):
-            from_acc = db.query(Account).filter(Account.user_id == from_id).first()
-            to_acc = db.query(Account).filter(Account.user_id == to_id).first()
-
-            if not from_acc or not to_acc:
-                raise ValueError("Not find Account")
-
-            if from_acc.balance < amount:
-                raise ValueError("Not enough balance")
-
-            from_acc.balance -= amount
-            to_acc.balance += amount
-
-            db.commit()
-            db.refresh(from_acc)
-            db.refresh(to_acc)
-
-            return {"from": from_acc, "to": to_acc}
+        await db.commit()
+        await db.refresh(account)
+        
+        try:
+            await kafka_service.send_message("account_events", {
+                "event_type": "deposit",
+                "account_id": account_id,
+                "amount": amount,
+                "new_balance": account.balance
+            })
+        except Exception as e:
+            print(f"[Kafka Error] Failed to send user_deleted event: {e}")
